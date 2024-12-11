@@ -28,7 +28,11 @@ async def predict(validation: str = Form(...) , file: UploadFile = File(...)):
     data=img.resize((640,640))
     yolo = YOLO("model/best.pt")
     res = yolo.predict(data, device='cpu')
-    cropImg, label = preprocessData(data, res)
+    
+    try :
+        cropImg, label = preprocessData(data, res)
+    except:
+        return {"error": "No fruit detected"}
     
     with tf.device('/cpu:0'):
         model = Model("Fruit Classification", fruitModel(yolo.names[label]))
